@@ -70,12 +70,14 @@ const CreateEventModalForm: React.FC<CreateEventModalForm> = ({
       >
         <Form.Item
           label="Title"
+          name="title"
           rules={[{ required: true, message: "Please input title" }]}
         >
           <Input />
         </Form.Item>
         <Form.Item
           label="Type"
+          name="type"
           rules={[{ required: true, message: "Please select a type" }]}
         >
           <Select>
@@ -89,17 +91,19 @@ const CreateEventModalForm: React.FC<CreateEventModalForm> = ({
         </Form.Item>
         <Form.Item
           label="Start Date"
+          name="startDate"
           rules={[{ required: true, message: "Please select a start date" }]}
         >
           <DatePicker />
         </Form.Item>
         <Form.Item
           label="End Date"
+          name="endDate"
           rules={[{ required: true, message: "Please select an end date" }]}
         >
           <DatePicker />
         </Form.Item>
-        <Form.Item label="Description">
+        <Form.Item label="Description" name="description">
           <TextArea rows={4} placeholder="maxLength is 140" maxLength={140} />
         </Form.Item>
       </Form>
@@ -121,6 +125,7 @@ export default function Home() {
 
   const handleCreate = (values: any) => {
     console.log("Success:", values);
+    setIsModalOpen(false);
   };
 
   const onCreateFailed = (errorInfo: any) => {
