@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { v4 as uuidv4 } from 'uuid'
 import axios from 'axios'
@@ -10,13 +11,14 @@ import {
   Select,
 } from "antd";
 
+
 const { TextArea } = Input;
 
 interface CreateEventModalForm {
   isOpen: boolean;
+  isUpdate:boolean;
   onCancel: () => void;
-  event?: Event;
-  setData?:any;
+  updateData?: Event;
 }
 
 interface Event {
@@ -30,12 +32,20 @@ interface Event {
 
 export const CreateEventModalForm: React.FC<CreateEventModalForm> = ({
   isOpen,
+  isUpdate,
   onCancel,
-  event,
-  setData
-  
+  updateData,
 }) => {
   const [form] = Form.useForm();
+
+  useEffect(() => {
+    if (updateData) {
+      form.setFieldsValue(updateData);
+    } else if (!isUpdate) {
+      form.resetFields();
+    }
+  }, [updateData, isUpdate, form]);
+
 
   const queryClient = useQueryClient();
 
@@ -56,17 +66,44 @@ export const CreateEventModalForm: React.FC<CreateEventModalForm> = ({
     return postResponse.data;
   };
 
+
+  const updateEvent = async (updatedEvent: Event) => {
+    console.log("UPDATE ",updatedEvent)
+    
+    const response = await axios.put(
+      `http://localhost:3001/events/${updateData.id}`,
+      updatedEvent
+    );
+  
+    if (response.status !== 200) {
+      throw new Error("An error occurred while updating the event");
+    }
+  
+    return response.data;
+  };
+  
+  const { mutate: update, isLoading: isUpdating } = useMutation(updateEvent, {
+    onSuccess: () => {
+      queryClient.invalidateQueries(["events"]);
+    },
+  });
+
   //add error and isLoading handling if I have the time...
   const { mutate, isLoading, isError, error } = useMutation(createEvent);
 
   const handleCreate = (value: Event) => {
-    console.log("Success:", value);
-    mutate(value);
+    console.log("VALUE ",value)
+    if (isUpdate) {
+      update(value);
+    } else {
+      mutate(value);
+    }
   };
 
   return (
     <Modal
-      title="Create Event"
+      title={isUpdate ? "Update event" : "Create event"}
+      okText={isUpdate ? "Update" : "Create"}
       open={isOpen}
       onOk={() => {
         form
@@ -79,7 +116,6 @@ export const CreateEventModalForm: React.FC<CreateEventModalForm> = ({
             console.log("Validate Failed:", info);
           });
       }}
-      okText="Save"
       onCancel={onCancel}
     >
       <Form
@@ -87,7 +123,6 @@ export const CreateEventModalForm: React.FC<CreateEventModalForm> = ({
         labelCol={{ span: 4 }}
         wrapperCol={{ span: 14 }}
         layout="horizontal"
-        initialValues={{ size: "default" }}
         style={{ maxWidth: 600 }}
       >
         <Form.Item

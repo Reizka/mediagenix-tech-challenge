@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useQuery, useMutation, QueryClient,QueryClientProvider } from "@tanstack/react-query";
 import axios from "axios";
+import dayjs from 'dayjs';
 
 import Head from "next/head";
 import styles from "@/styles/Home.module.css";
@@ -48,8 +49,19 @@ async function deleteEvent(eventId: string) {
 }
 
 export default function Home() {
-  
+  //table state for the view
   const [tableData, setTableData] = useState([]);
+  
+  const [isUpdate, setIsUpdate] = useState(false);
+  const [updateData, setUpdateData] = useState({
+    id: "",
+    title: "",
+    type: "",
+    startDate: dayjs(),
+    endDate:dayjs(),
+    description: "T"
+  });
+
   //GET DATA
   const { isLoading, isError, data, error } = getEvents();
 
@@ -63,7 +75,21 @@ export default function Home() {
 
   //UPDATE/DELETE single event by getting a callback from ColumsType.tsx which is embedded into ants Table
   const onUpdateEvent = (eventID: string) => {
-    console.log("Update event with ID:", eventID);
+  
+    const tData = tableData.find((event) => event.id === eventID)
+    if(tData !== undefined){
+      console.log("Update event with:", tData);
+      setIsUpdate(true)
+      setIsModalOpen(true)
+      setUpdateData({
+        ...tData,
+        startDate: dayjs(tData.startDate),
+        endDate: dayjs(tData.endDate),
+      });
+    }else{
+      console.error("could not find correct event")
+    }
+    
   };
 
   // Mutation for deleting an event
@@ -120,7 +146,7 @@ export default function Home() {
             />
           )}
         </Space>
-        <CreateEventModalForm isOpen={isModalOpen} onCancel={handleCancel} setData={setTableData}/>
+        <CreateEventModalForm isUpdate={isUpdate} isOpen={isModalOpen} onCancel={handleCancel} updateData={updateData}/>
       </main>
       </>
   );
