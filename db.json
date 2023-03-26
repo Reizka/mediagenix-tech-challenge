@@ -9,12 +9,12 @@
       "description": "This is an event about the start of this year"
     },
     {
-      "title": "Mediagenix holiday",
-      "type": "holiday",
-      "startDate": "2022-04-05T22:00:00.000Z",
-      "endDate": "2022-04-20T22:00:00.000Z",
-      "description": "Celebrating Mediagenix 2222",
-      "id": "2"
+      "title": "Hello",
+      "type": "competitor_event",
+      "startDate": "2023-03-15T20:36:07.330Z",
+      "endDate": "2023-03-30T19:36:07.330Z",
+      "description": "Taaaasks",
+      "id": "fff482fe-93f7-48b5-8efd-e00717c8c0b9"
     }
   ]
 }

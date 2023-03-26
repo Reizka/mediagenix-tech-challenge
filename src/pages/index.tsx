@@ -1,7 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { useQuery, useMutation, QueryClient,QueryClientProvider } from "@tanstack/react-query";
+import Fuse from "fuse.js";
+
+import {
+  useQuery,
+  useMutation,
+  QueryClient,
+  QueryClientProvider,
+} from "@tanstack/react-query";
 import axios from "axios";
-import dayjs from 'dayjs';
+import dayjs from "dayjs";
 
 import Head from "next/head";
 import styles from "@/styles/Home.module.css";
@@ -11,7 +18,6 @@ const { Search } = Input;
 import { columns } from "../tableSchema/columnsType";
 import { CreateEventModalForm } from "./createModal";
 
-const onSearch = (value: string) => console.log(value);
 const queryClient = new QueryClient();
 
 // REACT QUERY /*/
@@ -48,48 +54,60 @@ async function deleteEvent(eventId: string) {
   return response.data;
 }
 
+// Search function that uses Axios to get data
+async function searchEvents(query: string) {
+  const response = await axios.get("http://localhost:3001/events");
+  if (response.status !== 200) {
+    throw new Error("An error occurred while fetching events");
+  }
+
+  // create a new instance of Fuse
+  const fuse = new Fuse(response.data, {
+    keys: ["title", "description"], // specify the keys to search
+    includeScore: true, // include the score in the search results
+    threshold: 0.4, // set the threshold to control the level of fuzziness
+  });
+
+  // perform the search and return the results
+  return query
+    ? fuse.search(query).map((result) => result.item)
+    : response.data;
+}
+
 export default function Home() {
   //table state for the view
   const [tableData, setTableData] = useState([]);
-  
+
   const [isUpdate, setIsUpdate] = useState(false);
   const [updateData, setUpdateData] = useState({
     id: "",
     title: "",
     type: "",
     startDate: dayjs(),
-    endDate:dayjs(),
-    description: "T"
+    endDate: dayjs(),
+    description: "T",
   });
 
   //GET DATA
   const { isLoading, isError, data, error } = getEvents();
 
-  useEffect(() => {
-    if (data) {
-      setTableData(data);
-    }
-  }, [data, setTableData]);
-
   const col = columns;
 
   //UPDATE/DELETE single event by getting a callback from ColumsType.tsx which is embedded into ants Table
   const onUpdateEvent = (eventID: string) => {
-  
-    const tData = tableData.find((event) => event.id === eventID)
-    if(tData !== undefined){
+    const tData = tableData.find((event) => event.id === eventID);
+    if (tData !== undefined) {
       console.log("Update event with:", tData);
-      setIsUpdate(true)
-      setIsModalOpen(true)
+      setIsUpdate(true);
+      setIsModalOpen(true);
       setUpdateData({
         ...tData,
         startDate: dayjs(tData.startDate),
         endDate: dayjs(tData.endDate),
       });
-    }else{
-      console.error("could not find correct event")
+    } else {
+      console.error("could not find correct event");
     }
-    
   };
 
   // Mutation for deleting an event
@@ -105,6 +123,29 @@ export default function Home() {
     deleteEventMutation.mutate(eventId);
   };
 
+  //SEARCH
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const {
+    isLoading: isLoadingSearch,
+    isError: isSearchErro,
+    data: searchData,
+    error: searchError,
+  } = useSearchEvents(searchQuery);
+
+  const onSearch = (value: string) => {
+    setSearchQuery(value);
+  };
+
+  // React Query hook to handle caching and error handling for the search results
+  function useSearchEvents(query: string) {
+    return useQuery(["events", query], async () => {
+      const data = await searchEvents(query);
+      console.log(data);
+      return data;
+    });
+  }
+
   // MODAL
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -113,7 +154,16 @@ export default function Home() {
   };
   const handleCancel = () => {
     setIsModalOpen(false);
+    setIsUpdate(false);
   };
+
+  useEffect(() => {
+    if (searchQuery) {
+      setTableData(searchData);
+    } else if (data) {
+      setTableData(data);
+    }
+  }, [data, searchData, searchQuery]);
 
   return (
     <>
@@ -146,8 +196,13 @@ export default function Home() {
             />
           )}
         </Space>
-        <CreateEventModalForm isUpdate={isUpdate} isOpen={isModalOpen} onCancel={handleCancel} updateData={updateData}/>
+        <CreateEventModalForm
+          isUpdate={isUpdate}
+          isOpen={isModalOpen}
+          onCancel={handleCancel}
+          updateData={updateData}
+        />
       </main>
-      </>
+    </>
   );
 }

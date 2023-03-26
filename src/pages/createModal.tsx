@@ -1,34 +1,27 @@
-import { useEffect } from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { v4 as uuidv4 } from 'uuid'
-import axios from 'axios'
+import { useEffect } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { v4 as uuidv4 } from "uuid";
+import axios from "axios";
 
-import {
-  Modal,
-  DatePicker,
-  Form,
-  Input,
-  Select,
-} from "antd";
-
+import { Modal, DatePicker, Form, Input, Select } from "antd";
 
 const { TextArea } = Input;
 
 interface CreateEventModalForm {
   isOpen: boolean;
-  isUpdate:boolean;
+  isUpdate: boolean;
   onCancel: () => void;
   updateData?: Event;
 }
 
 interface Event {
-    id: string;
-    title: string;
-    type: string;
-    startDate: string;
-    endDate: string;
-    description: string;
-  }
+  id: string;
+  title: string;
+  type: string;
+  startDate: string;
+  endDate: string;
+  description: string;
+}
 
 export const CreateEventModalForm: React.FC<CreateEventModalForm> = ({
   isOpen,
@@ -46,7 +39,6 @@ export const CreateEventModalForm: React.FC<CreateEventModalForm> = ({
     }
   }, [updateData, isUpdate, form]);
 
-
   const queryClient = useQueryClient();
 
   const createEvent = async (event: Omit<Event, "id">) => {
@@ -55,7 +47,10 @@ export const CreateEventModalForm: React.FC<CreateEventModalForm> = ({
     const events = response.data;
     const newEvent = { ...event, id: uuidv4() };
 
-    const postResponse = await axios.post("http://localhost:3001/events", newEvent);
+    const postResponse = await axios.post(
+      "http://localhost:3001/events",
+      newEvent
+    );
     if (postResponse.status !== 201) {
       throw new Error("An error occurred while creating the event");
     }
@@ -66,22 +61,21 @@ export const CreateEventModalForm: React.FC<CreateEventModalForm> = ({
     return postResponse.data;
   };
 
-
   const updateEvent = async (updatedEvent: Event) => {
-    console.log("UPDATE ",updatedEvent)
-    
+    console.log("UPDATE ", updatedEvent);
+
     const response = await axios.put(
       `http://localhost:3001/events/${updateData.id}`,
       updatedEvent
     );
-  
+
     if (response.status !== 200) {
       throw new Error("An error occurred while updating the event");
     }
-  
+
     return response.data;
   };
-  
+
   const { mutate: update, isLoading: isUpdating } = useMutation(updateEvent, {
     onSuccess: () => {
       queryClient.invalidateQueries(["events"]);
@@ -92,7 +86,7 @@ export const CreateEventModalForm: React.FC<CreateEventModalForm> = ({
   const { mutate, isLoading, isError, error } = useMutation(createEvent);
 
   const handleCreate = (value: Event) => {
-    console.log("VALUE ",value)
+    console.log("VALUE ", value);
     if (isUpdate) {
       update(value);
     } else {
@@ -109,8 +103,9 @@ export const CreateEventModalForm: React.FC<CreateEventModalForm> = ({
         form
           .validateFields()
           .then((values: Event) => {
-            form.resetFields();
             handleCreate(values);
+            form.resetFields();
+            onCancel();
           })
           .catch((info: any) => {
             console.log("Validate Failed:", info);
