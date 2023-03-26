@@ -2,8 +2,12 @@ import { Space, Tag } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { DataType } from "./interfaces";
 
-export const columns: ColumnsType<DataType> = [
-  {
+interface ColumnsProps {
+  onUpdateEvent: (eventID: string) => void;
+  onDeleteEvent: (eventID: string) => void;
+}
+
+export const columns = ({ onUpdateEvent, onDeleteEvent }: ColumnsProps): ColumnsType<DataType> => [  {
     title: "Title",
     dataIndex: "title",
     key: "title",
@@ -41,37 +45,10 @@ export const columns: ColumnsType<DataType> = [
     key: "action",
     render: (_, record) => (
       <Space size="middle">
-        <a>Update {record.title}</a>
-        <a>Delete</a>
+         <a onClick={() => onUpdateEvent(record.id)}>Update</a>
+        <a onClick={() => onDeleteEvent(record.id)}>Delete</a>
       </Space>
     ),
   },
 ];
 
-//test data
-export const data: DataType[] = [
-  {
-    key: 1,
-    title: "John Brown",
-    type: "goday",
-    startDate: new Date("2022-04-01T10:30:00Z"),
-    endDate: new Date("2022-04-01T10:30:00Z"),
-    description: "hello1",
-  },
-  {
-    key: 2,
-    title: "John green",
-    type: "hello",
-    startDate: new Date("2022-04-01T10:30:00Z"),
-    endDate: new Date("2022-04-01T10:30:00Z"),
-    description: "hello2",
-  },
-  {
-    key: 3,
-    title: "John blue",
-    type: "allo",
-    startDate: new Date("2022-04-01T10:30:00Z"),
-    endDate: new Date("2022-04-01T10:30:00Z"),
-    description: "hello3",
-  },
-];

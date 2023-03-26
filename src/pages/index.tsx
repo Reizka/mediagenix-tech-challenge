@@ -1,119 +1,85 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useQuery, useMutation, QueryClient,QueryClientProvider } from "@tanstack/react-query";
+import axios from "axios";
 
 import Head from "next/head";
-import Image from "next/image";
-
 import styles from "@/styles/Home.module.css";
 import { SearchOutlined } from "@ant-design/icons";
-import {
-  Space,
-  Table,
-  Button,
-  Modal,
-  DatePicker,
-  Form,
-  Input,
-  Select,
-} from "antd";
-const { TextArea, Search } = Input;
-
-import { columns, data } from "../tableSchema/columnsType";
+import { Space, Table, Button, Input } from "antd";
+const { Search } = Input;
+import { columns } from "../tableSchema/columnsType";
+import { CreateEventModalForm } from "./createModal";
 
 const onSearch = (value: string) => console.log(value);
+const queryClient = new QueryClient();
 
-//Modal fields
-interface Values {
-  title: string;
-  type: string;
-  description: string;
-  startDate: Date;
-  endDate: Date;
-}
+// REACT QUERY /*/
 
-interface CreateEventModalForm {
-  isOpen: boolean;
-  onCreate: (values: Values) => void;
-  onCancel: () => void;
-}
-
-const CreateEventModalForm: React.FC<CreateEventModalForm> = ({
-  isOpen,
-  onCreate,
-  onCancel,
-}) => {
-  const [form] = Form.useForm();
-  return (
-    <Modal
-      title="Create Event"
-      open={isOpen}
-      onOk={() => {
-        form
-          .validateFields()
-          .then((values) => {
-            form.resetFields();
-            onCreate(values);
-          })
-          .catch((info) => {
-            console.log("Validate Failed:", info);
-          });
-      }}
-      okText="Save"
-      onCancel={onCancel}
-    >
-      <Form
-        form={form}
-        labelCol={{ span: 4 }}
-        wrapperCol={{ span: 14 }}
-        layout="horizontal"
-        initialValues={{ size: "default" }}
-        style={{ maxWidth: 600 }}
-      >
-        <Form.Item
-          label="Title"
-          name="title"
-          rules={[{ required: true, message: "Please input title" }]}
-        >
-          <Input />
-        </Form.Item>
-        <Form.Item
-          label="Type"
-          name="type"
-          rules={[{ required: true, message: "Please select a type" }]}
-        >
-          <Select>
-            <Select.Option value="generic">Generic event</Select.Option>
-            <Select.Option value="holiday">Holiday</Select.Option>
-            <Select.Option value="competitor_event">
-              Competitor event
-            </Select.Option>
-            <Select.Option value="content_launch">Content launch</Select.Option>
-          </Select>
-        </Form.Item>
-        <Form.Item
-          label="Start Date"
-          name="startDate"
-          rules={[{ required: true, message: "Please select a start date" }]}
-        >
-          <DatePicker />
-        </Form.Item>
-        <Form.Item
-          label="End Date"
-          name="endDate"
-          rules={[{ required: true, message: "Please select an end date" }]}
-        >
-          <DatePicker />
-        </Form.Item>
-        <Form.Item label="Description" name="description">
-          <TextArea rows={4} placeholder="maxLength is 140" maxLength={140} />
-        </Form.Item>
-      </Form>
-    </Modal>
+function getEvents() {
+  const { isLoading, isError, data, error } = useQuery(
+    ["events"], // wrap the query key in an array
+    async () => {
+      const response = await axios.get("http://localhost:3001/events");
+      if (response.status !== 200) {
+        throw new Error("An error occurred while fetching events");
+      }
+      return response.data;
+    }
   );
-};
+
+  return {
+    isLoading,
+    isError,
+    data,
+    error,
+  };
+}
+
+async function deleteEvent(eventId: string) {
+  const response = await axios.delete(
+    `http://localhost:3001/events/${eventId}`
+  );
+
+  if (response.status !== 200) {
+    throw new Error("An error occurred while deleting the event");
+  }
+
+  return response.data;
+}
 
 export default function Home() {
+  
+  const [tableData, setTableData] = useState([]);
+  //GET DATA
+  const { isLoading, isError, data, error } = getEvents();
+
+  useEffect(() => {
+    if (data) {
+      setTableData(data);
+    }
+  }, [data, setTableData]);
+
   const col = columns;
 
+  //UPDATE/DELETE single event by getting a callback from ColumsType.tsx which is embedded into ants Table
+  const onUpdateEvent = (eventID: string) => {
+    console.log("Update event with ID:", eventID);
+  };
+
+  // Mutation for deleting an event
+  const deleteEventMutation = useMutation(deleteEvent, {
+    onSuccess: () => {
+      queryClient.invalidateQueries(["events"]);
+    },
+  });
+
+  const onDeleteEvent = (eventId: string) => {
+    const newData = tableData.filter((event) => event.id !== eventId);
+    setTableData(newData);
+    deleteEventMutation.mutate(eventId);
+  };
+
+  // MODAL
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const showModal = () => {
@@ -121,15 +87,6 @@ export default function Home() {
   };
   const handleCancel = () => {
     setIsModalOpen(false);
-  };
-
-  const handleCreate = (values: any) => {
-    console.log("Success:", values);
-    setIsModalOpen(false);
-  };
-
-  const onCreateFailed = (errorInfo: any) => {
-    console.log("Failed:", errorInfo);
   };
 
   return (
@@ -151,14 +108,20 @@ export default function Home() {
             />
             <Button onClick={showModal}>Create event</Button>
           </Space>
-          <Table columns={col} dataSource={data} />
+          {isError && error instanceof Error && (
+            <div>Error: {error.message}</div>
+          )}
+          {isLoading ? (
+            <div>Loading...</div>
+          ) : (
+            <Table
+              columns={col({ onUpdateEvent, onDeleteEvent })}
+              dataSource={tableData}
+            />
+          )}
         </Space>
-        <CreateEventModalForm
-          isOpen={isModalOpen}
-          onCreate={handleCreate}
-          onCancel={handleCancel}
-        />
+        <CreateEventModalForm isOpen={isModalOpen} onCancel={handleCancel} setData={setTableData}/>
       </main>
-    </>
+      </>
   );
 }

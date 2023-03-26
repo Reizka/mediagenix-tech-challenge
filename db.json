@@ -1,0 +1,44 @@
+{
+  "events": [
+    {
+      "id": "1",
+      "title": "Start of the year",
+      "type": "generic",
+      "startDate": "2022-01-01",
+      "endDate": "2022-12-01",
+      "description": "This is an event about the start of this year"
+    },
+    {
+      "id": "2",
+      "title": "Mediagenix holiday",
+      "type": "holiday",
+      "startDate": "2022-04-04",
+      "endDate": "2022-04-05",
+      "description": "Celebrating Mediagenix"
+    },
+    {
+      "title": "aaaa",
+      "type": "competitor_event",
+      "startDate": "2023-03-16T16:12:21.202Z",
+      "endDate": "2023-03-23T16:12:22.934Z",
+      "description": "agasdgsdfg",
+      "id": "d6bf7c65-3796-429e-9a93-dab8b40c685e"
+    },
+    {
+      "title": "aaa",
+      "type": "holiday",
+      "startDate": "2023-03-15T16:21:45.324Z",
+      "endDate": "2023-03-16T16:21:47.043Z",
+      "description": "afgsadg",
+      "id": "2bc23fba-1ab9-4862-a54f-b0bd122c4d71"
+    },
+    {
+      "title": "dfghdfhd",
+      "type": "holiday",
+      "startDate": "2023-03-22T16:21:55.823Z",
+      "endDate": "2023-03-29T15:21:57.557Z",
+      "description": "agsdg",
+      "id": "72a7f914-06a3-4ed2-a31e-3525c4ef7e1d"
+    }
+  ]
+}

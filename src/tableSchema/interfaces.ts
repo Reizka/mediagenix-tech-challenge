@@ -1,5 +1,5 @@
 export interface DataType {
-    key: number;
+    id: string;
     title: string;
     description: string;
     startDate: Date;
