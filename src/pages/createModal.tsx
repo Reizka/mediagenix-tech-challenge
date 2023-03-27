@@ -9,7 +9,7 @@ const { TextArea } = Input;
 
 interface CreateEventModalForm {
   isOpen: boolean;
-  isUpdate: boolean;
+  isUpdate?: boolean;
   onCancel: () => void;
   updateData?: Event;
 }

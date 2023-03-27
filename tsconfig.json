@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "types": ["jest", "@testing-library/jest-dom", "@types/testing-library__user-event"],
     "target": "es5",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
@@ -18,6 +19,8 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "src/pages/__tests__/index.test.js", "src/pages/__tests__/modal.test.js"],
   "exclude": ["node_modules"]
 }
+
+  
