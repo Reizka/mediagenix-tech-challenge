@@ -9,20 +9,28 @@
       "description": "This is an event about the start of this year"
     },
     {
-      "title": "Hello",
-      "type": "competitor_event",
-      "startDate": "2023-03-15T20:36:07.330Z",
-      "endDate": "2023-03-30T19:36:07.330Z",
-      "description": "Taaaasks",
-      "id": "fff482fe-93f7-48b5-8efd-e00717c8c0b9"
-    },
-    {
-      "title": "Hello",
-      "type": "competitor_event",
+      "title": "Hello2",
+      "type": "holiday",
       "startDate": "2023-03-13T23:15:59.900Z",
       "endDate": "2023-03-26T22:15:59.900Z",
       "description": "Taaaaaa",
       "id": "c571d6f8-3813-4ab1-8161-e3d1eb5ec80b"
+    },
+    {
+      "title": "hallo",
+      "type": "holiday",
+      "startDate": "2023-03-29T03:56:55.690Z",
+      "endDate": "2023-03-30T03:56:55.690Z",
+      "description": "Tsaaaa",
+      "id": "717922b9-cf88-4900-b5fc-7c667bf9cf95"
+    },
+    {
+      "title": "hllo",
+      "type": "competitor_event",
+      "startDate": "2023-03-30T06:12:47.565Z",
+      "endDate": "2023-03-30T06:12:47.565Z",
+      "description": "Tddd",
+      "id": "c99683b0-0e65-4eb3-83c5-c914e1cf4316"
     }
   ]
 }

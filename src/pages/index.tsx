@@ -17,6 +17,7 @@ import { Space, Table, Button, Input } from "antd";
 const { Search } = Input;
 import { columns } from "../tableSchema/columnsType";
 import { CreateEventModalForm } from "./createModal";
+import { getFirstElement } from "./typescriptTest";
 
 const queryClient = new QueryClient();
 
@@ -88,10 +89,23 @@ export default function Home() {
     description: "T",
   });
 
+  //TYPESCRIPT TEST
+  useEffect(() => {
+    const numbers: number[] = [1, 2, 3, 4, 5];
+    const strings: string[] = ["apple", "banana", "cherry"];
+    const booleans: boolean[] = [true, false, true];
+    const mixed: [number, string, boolean] = [899, "hello", true];
+    console.log("%cTypeScriptTest", "color: orange; font-size:15px;");
+    console.log([
+      getFirstElement(numbers),
+      getFirstElement(strings),
+      getFirstElement(booleans),
+      getFirstElement(mixed),
+    ]);
+  }, [true]);
+
   //GET DATA
   const { isLoading, isError, data, error } = getEvents();
-
-  const col = columns;
 
   //UPDATE/DELETE single event by getting a callback from ColumsType.tsx which is embedded into ants Table
   const onUpdateEvent = (eventID: string) => {
@@ -110,7 +124,7 @@ export default function Home() {
     }
   };
 
-  // Mutation for deleting an event
+  // EVENT DELETION
   const deleteEventMutation = useMutation(deleteEvent, {
     onSuccess: () => {
       queryClient.invalidateQueries(["events"]);
@@ -175,7 +189,6 @@ export default function Home() {
       </Head>
 
       <main className={styles.main}>
-        <h1>test</h1>
         <Space direction="vertical" size="middle">
           <Space>
             <Search
@@ -192,7 +205,7 @@ export default function Home() {
             <div>Loading...</div>
           ) : (
             <Table
-              columns={col({ onUpdateEvent, onDeleteEvent })}
+              columns={columns({ onUpdateEvent, onDeleteEvent })}
               dataSource={tableData}
             />
           )}
