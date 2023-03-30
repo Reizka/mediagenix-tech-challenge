@@ -23,12 +23,12 @@ interface Event {
   description: string;
 }
 
-export const CreateEventModalForm: React.FC<CreateEventModalForm> = ({
+export const CreateEventModalForm = ({
   isOpen,
   isUpdate,
   onCancel,
   updateData,
-}) => {
+}: CreateEventModalForm) => {
   const [form] = Form.useForm();
 
   useEffect(() => {

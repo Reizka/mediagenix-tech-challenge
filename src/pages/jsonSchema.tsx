@@ -1,14 +1,11 @@
 import React, { FormEvent, useState } from "react";
 
-/*
 interface SchemaFormProps {
-    schema: string;
-    onSubmit: (event: FormEvent<HTMLFormElement>) => void;
-  }
-  
-  const SchemaForm: React.FC<SchemaFormProps> = ({ schema, onSubmit }) => {
-    // Your component logic and JSX here
-  
+  schema: string;
+  onSubmit: (event: FormEvent<HTMLFormElement>) => void;
+}
+
+const SchemaForm = ({ schema, onSubmit }: SchemaFormProps) => {
   const handleChange = (name, value) => {
     //setFormData({ ...formData, [name]: value });
   };
@@ -27,4 +24,4 @@ interface SchemaFormProps {
       <button type="submit">Submit</button>
     </form>
   );
-};*/
+};
