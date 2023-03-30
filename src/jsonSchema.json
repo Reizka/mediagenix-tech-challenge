@@ -1,33 +1,36 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "type": "object",
-    "properties": {
-      "title": {
-        "type": "string",
-        "description": "The title of the event",
-        "minLength": 1
-      },
-      "type": {
-        "type": "string",
-        "description": "The type of the event",
-        "enum": ["generic", "holiday"]
-      },
-      "startDate": {
-        "type": "string",
-        "description": "The start date of the event in ISO 8601 format",
-        "format": "date-time"
-      },
-      "endDate": {
-        "type": "string",
-        "description": "The end date of the event in ISO 8601 format",
-        "format": "date-time"
-      },
-      "description": {
-        "type": "string",
-        "description": "A description of the event",
-        "minLength": 0
-      }
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "title": "Title",
+      "description": "Enter the title of the event."
     },
-    "required": ["title", "type", "startDate", "endDate"]
-  }
-  
+    "type": {
+      "type": "string",
+      "title": "Type",
+      "description": "Select the type of the event.",
+      "enum": ["generic", "holiday"],
+      "enumNames": ["Generic", "Holiday"]
+    },
+    "startDate": {
+      "type": "string",
+      "format": "date",
+      "title": "Start Date",
+      "description": "Select the start date of the event."
+    },
+    "endDate": {
+      "type": "string",
+      "format": "date",
+      "title": "End Date",
+      "description": "Select the end date of the event."
+    },
+    "description": {
+      "type": "string",
+      "title": "Description",
+      "description": "Enter a description of the event."
+    }
+  },
+  "required": ["title", "startDate", "endDate"]
+}

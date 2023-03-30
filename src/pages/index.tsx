@@ -64,9 +64,9 @@ async function searchEvents(query: string) {
 
   // create a new instance of Fuse
   const fuse = new Fuse(response.data, {
-    keys: ["title", "description"], // specify the keys to search
-    includeScore: true, // include the score in the search results
-    threshold: 0.4, // set the threshold to control the level of fuzziness
+    keys: ["title", "description"],
+    includeScore: true,
+    threshold: 0.4,
   });
 
   // perform the search and return the results
